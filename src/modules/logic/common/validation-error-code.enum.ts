@@ -1,0 +1,5 @@
+export enum ValidationErrorCode {
+  FIELD_REQUIRED = 'FIELD_REQUIRED',
+  INVALID_VALUE = 'INVALID_VALUE',
+  INVALID_EMAIL = 'INVALID_EMAIL',
+}
