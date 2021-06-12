@@ -4,7 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
-  Param,
+  Param, ParseIntPipe,
   Post,
   Put,
   Query,
@@ -16,7 +16,7 @@ import { PartnerHeaderDto } from './dto/partners/partner-header-dto';
 import { PartnerDto } from './dto/partners/partner-dto';
 import {
   ApiExtraModels,
-  ApiOkResponse, ApiTags,
+  ApiOkResponse, ApiQuery, ApiTags,
 } from '@nestjs/swagger';
 import { IdentifyDto } from './dto/common/identify-dto';
 import { ErrorMessageCode } from '@common/error-message-code.enum';
@@ -25,6 +25,7 @@ import { ApiErrorResponse } from './decorators/api-error-response';
 import { ApiInternalErrorResponse } from './decorators/api-internal-error-response';
 import { ApiValidationErrorResponse } from './decorators/api-validation-error-response';
 import { ErrorInfoDto } from './dto/common/error-info-dto';
+import {ParseIntOptPipe} from './pipes/parse-int-opt.pipe';
 
 @Controller('partner')
 @ApiTags('partner')
@@ -36,12 +37,15 @@ export class PartnerController {
   ) {}
 
   @Get('/search')
+  @ApiQuery({ name: 'query', type: 'string', required: false })
+  @ApiQuery({ name: 'pageNum', type: 'number', required: false })
+  @ApiQuery({ name: 'pageSize', type: 'number', required: false })
   @ApiPaginatedResponse(PartnerHeaderDto)
   @ApiInternalErrorResponse()
   async search(
     @Query('query') queryString?: string,
-    @Query('pageNum') pageNum = 0,
-    @Query('pageSize') pageSize = 10,
+    @Query('pageNum', new ParseIntOptPipe(0)) pageNum?: number,
+    @Query('pageSize', new ParseIntOptPipe(10)) pageSize?: number,
   ): Promise<PageDataDto<PartnerHeaderDto>> {
     try {
       const data = await this._partnerService.searchPartners(
