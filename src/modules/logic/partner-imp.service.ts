@@ -25,52 +25,50 @@ export class PartnerImpService implements PartnerService {
   private validatePartner(
     partner: Partial<PartnerInfo>,
   ): ErrorInfo<PartnerInfo> {
-    const errorBuilder = new ValidationErrorCollector<PartnerInfo>();
+    const errorCollector = new ValidationErrorCollector<PartnerInfo>();
 
     const isStringEmpty = (value?: string) => !(value || '').trim();
 
     if (!partner?.partnerType) {
-      errorBuilder
+      errorCollector
         .child('partnerType')
         .addErrors(ValidationErrorCode.FIELD_REQUIRED);
     } else if (!Object.values(PartnerType).includes(partner.partnerType)) {
-      errorBuilder
+      errorCollector
         .child('partnerType')
         .addErrors(ValidationErrorCode.INVALID_VALUE);
     }
 
-
-
     if (isStringEmpty(partner?.addressInfo?.idx)) {
-      errorBuilder
+      errorCollector
         .child('addressInfo')
         .child('idx')
         .addErrors(ValidationErrorCode.FIELD_REQUIRED);
     }
 
     if (isStringEmpty(partner?.addressInfo?.houseNumber)) {
-      errorBuilder
+      errorCollector
         .child('addressInfo')
         .child('houseNumber')
         .addErrors(ValidationErrorCode.FIELD_REQUIRED);
     }
 
     if (isStringEmpty(partner?.addressInfo?.street)) {
-      errorBuilder
+      errorCollector
         .child('addressInfo')
         .child('street')
         .addErrors(ValidationErrorCode.FIELD_REQUIRED);
     }
 
     if (isStringEmpty(partner?.contactInfo?.phone)) {
-      errorBuilder
+      errorCollector
         .child('contactInfo')
         .child('phone')
         .addErrors(ValidationErrorCode.FIELD_REQUIRED);
     }
 
     if (isStringEmpty(partner?.contactInfo?.email)) {
-      errorBuilder
+      errorCollector
         .child('contactInfo')
         .child('email')
         .addErrors(ValidationErrorCode.FIELD_REQUIRED);
@@ -78,14 +76,14 @@ export class PartnerImpService implements PartnerService {
 
     if (partner?.partnerType === PartnerType.naturalPerson) {
       if (isStringEmpty(partner?.personalInfo?.firstName)) {
-        errorBuilder
+        errorCollector
           .child('personalInfo')
           .child('firstName')
           .addErrors(ValidationErrorCode.FIELD_REQUIRED);
       }
 
       if (isStringEmpty(partner?.personalInfo?.lastName)) {
-        errorBuilder
+        errorCollector
           .child('personalInfo')
           .child('lastName')
           .addErrors(ValidationErrorCode.FIELD_REQUIRED);
@@ -94,14 +92,14 @@ export class PartnerImpService implements PartnerService {
 
     if (partner?.partnerType === PartnerType.legalEntity) {
       if (isStringEmpty(partner?.companyInfo?.name)) {
-        errorBuilder
+        errorCollector
           .child('companyInfo')
           .child('name')
           .addErrors(ValidationErrorCode.FIELD_REQUIRED);
       }
     }
 
-    const result = errorBuilder.collect();
+    const result = errorCollector.collect();
 
     return result;
   }
@@ -110,7 +108,7 @@ export class PartnerImpService implements PartnerService {
     try {
       const errors = this.validatePartner(v);
       if (errors) {
-        throw new ServiceError(ErrorMessageCode.VALIDATION_ERROR, errors);
+        throw new ServiceError(ErrorMessageCode.VALIDATION_ERROR, { errors });
       }
       return this._partnerRepo.add(v);
     } catch (e) {
@@ -124,7 +122,7 @@ export class PartnerImpService implements PartnerService {
         new PartnerPredicateById(id),
       );
       if (!partner) {
-        throw new ServiceError(ErrorMessageCode.PARTNER_NOT_FOUND, id);
+        throw new ServiceError(ErrorMessageCode.PARTNER_NOT_FOUND, { id });
       }
       return partner;
     } catch (e) {
@@ -161,7 +159,7 @@ export class PartnerImpService implements PartnerService {
     try {
       const errors = this.validatePartner(v);
       if (errors) {
-        throw new ServiceError(ErrorMessageCode.VALIDATION_ERROR, errors);
+        throw new ServiceError(ErrorMessageCode.VALIDATION_ERROR, { errors });
       }
       return this._partnerRepo.update(v);
     } catch (e) {

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -10,16 +11,23 @@ import {
 } from '@nestjs/common';
 import { PartnerService } from '../logic/partner.service';
 import { ErrorHandler } from '@common/error-handler';
-import { PageDataDto, toPageDataDto } from './dto/page-data.dto';
-import { PartnerHeaderDto, toPartnerHeaderDto } from './dto/partner-header-dto';
+import { PageDataDto } from './dto/common/page-data.dto';
+import { PartnerHeaderDto } from './dto/partners/partner-header-dto';
+import { PartnerDto } from './dto/partners/partner-dto';
 import {
-  fromPartnerDto,
-  PartnerDto,
-  PartnerUpdateDataDto,
-  toPartnerDto,
-} from './dto/partner-dto';
+  ApiExtraModels,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { IdentifyDto } from './dto/common/identify-dto';
+import { ErrorMessageCode } from '@common/error-message-code.enum';
+import { ApiPaginatedResponse } from './decorators/api-paginated-response';
+import { ApiErrorResponse } from './decorators/api-error-response';
+import { ApiInternalErrorResponse } from './decorators/api-internal-error-response';
+import { ApiValidationErrorResponse } from './decorators/api-validation-error-response';
+import { ErrorInfoDto } from './dto/common/error-info-dto';
 
 @Controller('partner')
+@ApiExtraModels(PageDataDto, ErrorInfoDto)
 export class PartnerController {
   constructor(
     private _partnerService: PartnerService,
@@ -27,6 +35,8 @@ export class PartnerController {
   ) {}
 
   @Get('/search')
+  @ApiPaginatedResponse(PartnerHeaderDto)
+  @ApiInternalErrorResponse()
   async search(
     @Query('query') queryString?: string,
     @Query('pageNum') pageNum = 0,
@@ -38,29 +48,46 @@ export class PartnerController {
         pageNum,
         pageSize,
       );
-      return toPageDataDto(data, toPartnerHeaderDto);
+      return PageDataDto.toDto(data, PartnerHeaderDto.toDto);
     } catch (e) {
       this._errorHandler.handleError(e);
     }
   }
 
   @Get(':partnerId')
+  @ApiOkResponse({
+    type: PartnerDto,
+  })
+  @ApiErrorResponse(
+    HttpStatus.NOT_FOUND,
+    ErrorMessageCode.PARTNER_NOT_FOUND,
+    IdentifyDto,
+  )
+  @ApiInternalErrorResponse()
   async getPartner(@Param('partnerId') partnerId: string): Promise<PartnerDto> {
     try {
       const partner = await this._partnerService.getPartnerById(partnerId);
-      return toPartnerDto(partner);
+      return PartnerDto.toDto(partner);
     } catch (e) {
       this._errorHandler.handleError(e);
     }
   }
 
   @Put(':partnerId')
+  @ApiOkResponse()
+  @ApiErrorResponse(
+    HttpStatus.NOT_FOUND,
+    ErrorMessageCode.PARTNER_NOT_FOUND,
+    IdentifyDto,
+  )
+  @ApiValidationErrorResponse()
+  @ApiInternalErrorResponse()
   async updatePartner(
     @Param('partnerId') id: string,
-    @Body() partnerData: PartnerUpdateDataDto,
+    @Body() partnerData: PartnerDto,
   ): Promise<unknown> {
     try {
-      const partner = fromPartnerDto({ id, ...partnerData } as PartnerDto);
+      const partner = PartnerDto.fromDto({ id, ...partnerData });
       return this._partnerService.updatePartner(partner);
     } catch (e) {
       this._errorHandler.handleError(e);
@@ -68,18 +95,29 @@ export class PartnerController {
   }
 
   @Post()
-  async addPartner(
-    @Body() partnerData: PartnerUpdateDataDto,
-  ): Promise<{ id: string }> {
+  @ApiOkResponse({
+    type: IdentifyDto,
+  })
+  @ApiValidationErrorResponse()
+  @ApiInternalErrorResponse()
+  async addPartner(@Body() partnerData: PartnerDto): Promise<IdentifyDto> {
     try {
-      const partner = fromPartnerDto(partnerData as PartnerDto);
-      return this._partnerService.addPartner(partner);
+      const partner = PartnerDto.fromDto(partnerData);
+      const result = await this._partnerService.addPartner(partner);
+      return IdentifyDto.toDto(result);
     } catch (e) {
       this._errorHandler.handleError(e);
     }
   }
 
   @Delete(':partnerId')
+  @ApiOkResponse()
+  @ApiErrorResponse(
+    HttpStatus.NOT_FOUND,
+    ErrorMessageCode.PARTNER_NOT_FOUND,
+    IdentifyDto,
+  )
+  @ApiInternalErrorResponse()
   async removePartner(@Param('partnerId') id: string): Promise<unknown> {
     try {
       return this._partnerService.removePartner(id);

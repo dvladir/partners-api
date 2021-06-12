@@ -5,4 +5,4 @@ export type ErrorInfoChildren<T> = {
 export interface ErrorInfo<T> {
   errors?: string[];
   children?: ErrorInfoChildren<T>;
-};
+}

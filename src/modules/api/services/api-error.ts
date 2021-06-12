@@ -7,9 +7,10 @@ export type MessageStatusMap = Partial<Record<ErrorMessageCode, HttpStatus>>;
 const DEFAULT_MESSAGE_STATUS_MAP: MessageStatusMap = {
   [ErrorMessageCode.PARTNER_NOT_FOUND]: HttpStatus.NOT_FOUND,
   [ErrorMessageCode.INVALID_PARTNER_TYPE]: HttpStatus.BAD_REQUEST,
+  [ErrorMessageCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
 };
 
-export class ApiError extends BaseError {
+export class ApiError<P extends Record<string, unknown>> extends BaseError<P> {
   convertToHttpException(
     messageStatusMap: MessageStatusMap = {},
   ): HttpException {
@@ -17,12 +18,8 @@ export class ApiError extends BaseError {
     const status = statusMap[this.code] || HttpStatus.INTERNAL_SERVER_ERROR;
 
     const response = {
-      messages: [
-        {
-          code: this.code,
-          params: this.params,
-        },
-      ],
+      code: this.code,
+      params: this.params,
     };
 
     return new HttpException(response, status);
