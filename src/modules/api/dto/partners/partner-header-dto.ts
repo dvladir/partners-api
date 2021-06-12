@@ -1,6 +1,6 @@
 import { PartnerType } from '@domain/partner-type.enum';
 import { PartnerInfo } from '@domain/partner-info';
-import {ApiProperty} from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PartnerHeaderDto {
   constructor(data: Partial<PartnerHeaderDto> = {}) {

@@ -8,13 +8,16 @@ export const ApiPaginatedResponse = <Model extends Type<any>>(model: Model) => {
       schema: {
         allOf: [
           {
-            $ref: getSchemaPath(PageDataDto),
+            type: 'object',
             properties: {
               data: {
                 type: 'array',
                 items: { $ref: getSchemaPath(model) },
               },
             },
+          },
+          {
+            $ref: getSchemaPath(PageDataDto),
           },
         ],
       },

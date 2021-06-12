@@ -16,7 +16,7 @@ import { PartnerHeaderDto } from './dto/partners/partner-header-dto';
 import { PartnerDto } from './dto/partners/partner-dto';
 import {
   ApiExtraModels,
-  ApiOkResponse,
+  ApiOkResponse, ApiTags,
 } from '@nestjs/swagger';
 import { IdentifyDto } from './dto/common/identify-dto';
 import { ErrorMessageCode } from '@common/error-message-code.enum';
@@ -27,7 +27,8 @@ import { ApiValidationErrorResponse } from './decorators/api-validation-error-re
 import { ErrorInfoDto } from './dto/common/error-info-dto';
 
 @Controller('partner')
-@ApiExtraModels(PageDataDto, ErrorInfoDto)
+@ApiTags('partner')
+@ApiExtraModels(PartnerHeaderDto, PageDataDto, ErrorInfoDto)
 export class PartnerController {
   constructor(
     private _partnerService: PartnerService,
