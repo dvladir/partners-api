@@ -1,6 +1,6 @@
-import { Gender } from '@domain/gender.enum';
-import { PersonalInfo } from '@domain/personal-info';
-import { ApiProperty } from '@nestjs/swagger';
+import {Gender} from '@domain/gender.enum';
+import {PersonalInfo} from '@domain/personal-info';
+import {ApiProperty} from '@nestjs/swagger';
 
 export class PersonalDto {
   constructor(data: Partial<PersonalDto> = {}) {
@@ -23,7 +23,9 @@ export class PersonalDto {
   @ApiProperty()
   birthDate: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: [Gender.male, Gender.female]
+  })
   gender: Gender;
 
   static toDto(p: PersonalInfo): PersonalDto {
