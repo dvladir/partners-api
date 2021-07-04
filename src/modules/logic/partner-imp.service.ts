@@ -88,6 +88,20 @@ export class PartnerImpService implements PartnerService {
           .child('lastName')
           .addErrors(ValidationErrorCode.FIELD_REQUIRED);
       }
+
+      if (isStringEmpty(partner?.personalInfo?.gender)) {
+        errorCollector
+          .child('personalInfo')
+          .child('gender')
+          .addErrors(ValidationErrorCode.FIELD_REQUIRED);
+      }
+
+      if (isStringEmpty(partner?.personalInfo?.birthDate)) {
+        errorCollector
+          .child('personalInfo')
+          .child('birthDate')
+          .addErrors(ValidationErrorCode.FIELD_REQUIRED);
+      }
     }
 
     if (partner?.partnerType === PartnerType.legalEntity) {

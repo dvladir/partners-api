@@ -114,7 +114,7 @@ export class PartnerRepositoryImpService implements PartnerRepositoryService {
     if (index < 0) {
       throw new PersistenceError(ErrorMessageCode.PARTNER_NOT_FOUND, { id });
     }
-    PARTNER_STORE.slice(index, 1);
+    PARTNER_STORE.splice(index, 1);
     return true;
   }
 
@@ -122,7 +122,7 @@ export class PartnerRepositoryImpService implements PartnerRepositoryService {
     const { id } = v;
     const { partnerType, companyInfo, personalInfo, contactInfo, addressInfo } =
       this.getPartnerData(v);
-    const u = PARTNER_STORE.findIndex((u) => u.id === id);
+    const u = PARTNER_STORE.find((u) => u.id === id);
 
     if (!u) {
       throw new PersistenceError(ErrorMessageCode.PARTNER_NOT_FOUND, { id });
@@ -135,6 +135,7 @@ export class PartnerRepositoryImpService implements PartnerRepositoryService {
       contactInfo,
       addressInfo,
     });
+
     return true;
   }
 }
