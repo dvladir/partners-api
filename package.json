@@ -4,7 +4,11 @@
   "description": "",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvladir/partners-api"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
