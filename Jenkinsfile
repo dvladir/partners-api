@@ -31,6 +31,9 @@ pipeline {
                 sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy .'
                 sh 'gzip out.tar'
                 withCredentials([sshUserPrivateKey(credentialsId: 'deploy', keyFileVariable: 'keyfile')]) {
+                    sh "echo ${keyfile}"
+                    sh "echo ${DEPLOY_PORT}"
+                    sh "echo ${DEPLOY_HOST}"
                     sh 'scp -i ${keyfile} -P ${DEPLOY_PORT} ./out.tar.gz ${DEPLOY_HOST}:~'
                 }
             }
