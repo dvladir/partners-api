@@ -20,7 +20,8 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'CURRENT: $PWD'
+                echo 'CURRENT:'
+                sh 'echo $PWD'
                 sh 'ls -a .'
                 sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy .'
                 sh 'gzip out.tar'
