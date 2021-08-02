@@ -3,21 +3,18 @@ pipeline {
         disableConcurrentBuilds()
     }
 
-    agent {
-        docker {
-            image 'rastasheep/alpine-node-chromium:14-alpine'
-            args '--net=host'
-        }
-    }
+    agent any
 
     stages {
-        stage('Install') {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'rastasheep/alpine-node-chromium:14-alpine'
+                    args '-v /usr/src/app:/usr/src/app -w /usr/src/app --net=host'
+                }
+            }
             steps {
                 sh 'yarn'
-            }
-        }
-        stage('Build') {
-            steps {
                 sh 'yarn build'
             }
         }
@@ -29,6 +26,12 @@ pipeline {
                     sh "scp -i ${keyfile} ./out.tar.gz host.docker.internal:~"
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
