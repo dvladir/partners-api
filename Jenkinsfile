@@ -20,6 +20,10 @@ pipeline {
             }
         }
         stage('Deploy') {
+            environment {
+                DEPLOY_HOST = credentials('deploy-host')
+                DEPLY_PORT = credentials('deploy-port')
+            }
             steps {
                 echo 'CURRENT:'
                 sh 'echo $PWD'
@@ -27,7 +31,7 @@ pipeline {
                 sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy .'
                 sh 'gzip out.tar'
                 withCredentials([sshUserPrivateKey(credentialsId: 'deploy', keyFileVariable: 'keyfile')]) {
-                    sh "scp -i ${keyfile} ./out.tar.gz host.docker.internal:~"
+                    sh "scp -i $keyfile -P $DEPLY_PORT ./out.tar.gz $DEPLOY_HOST:~"
                 }
             }
         }
