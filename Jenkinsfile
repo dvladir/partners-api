@@ -10,7 +10,7 @@ pipeline {
             agent {
                 docker {
                     image 'rastasheep/alpine-node-chromium:14-alpine'
-                    args '-v /usr/src/app:/usr/src/app -w /usr/src/app --net=host'
+                    args '--net=host'
                 }
             }
             steps {
