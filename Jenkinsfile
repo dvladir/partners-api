@@ -20,11 +20,9 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'CURRENT'
+                echo 'CURRENT: $PWD'
                 sh 'ls -a .'
-                echo 'APP'
-                sh 'ls -a /usr/src/app'
-                sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy /usr/src/app'
+                sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy .'
                 sh 'gzip out.tar'
                 withCredentials([sshPrivateKey(credentialsId: 'deploy', keyFileVariable: 'keyfile')]) {
                     sh "scp -i ${keyfile} ./out.tar.gz host.docker.internal:~"
