@@ -11,6 +11,7 @@ pipeline {
                 docker {
                     image 'rastasheep/alpine-node-chromium:14-alpine'
                     args '--net=host'
+                    reuseNode true
                 }
             }
             steps {
