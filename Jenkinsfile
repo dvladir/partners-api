@@ -1,5 +1,5 @@
 pipeline {
-    opstion {
+    options {
         disableConcurrentBuilds()
     }
 
