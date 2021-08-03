@@ -40,8 +40,8 @@ pipeline {
                             passphraseVariable: 'passphrase',
                             usernameVariable: 'userName'
                     )]) {
-                        echo '12345 ${keyfile}'
-                        echo '12345 ${passphrase}'
+                        echo "12345 ${keyfile}"
+                        echo "12345 ${passphrase}"
                         remote.user = userName
                         remote.idenityFile = keyfile
                         remote.passphrase = passphrase
