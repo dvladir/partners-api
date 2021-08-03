@@ -42,6 +42,9 @@ pipeline {
                         remote.user = userName
                         remote.idenity = keyfile
                         remote.passphrase = passphrase
+                        for (def key in remote.keySet()) {
+                            println "key = ${key}, value = ${remote[key]}"
+                        }
                         sshPut remote: remote, from: './out.tar.gz', into: '.'
                     }
                 }
