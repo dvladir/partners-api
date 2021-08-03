@@ -25,13 +25,25 @@ pipeline {
                 DEPLOY_PORT = credentials('deploy-port')
             }
             steps {
-                echo 'CURRENT:'
-                sh 'echo $PWD'
-                sh 'ls -a .'
                 sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy .'
                 sh 'gzip out.tar'
-                withCredentials([sshUserPrivateKey(credentialsId: 'deploy', keyFileVariable: 'keyfile')]) {
-                    sh 'scp -o StrictHostKeyChecking=no -i ${keyfile} -P ${DEPLOY_PORT} ./out.tar.gz ${DEPLOY_HOST}:~'
+                script {
+                    def remote = [:]
+                    remote.name = DEPLOY_HOST
+                    remote.host = DEPLOY_HOST
+                    remote.port = DEPLOY_PORT
+                    remote.allowAnyHosts = true
+                    withCredentials([sshUserPrivateKey(
+                            credentialsId: 'deploy',
+                            keyFileVariable: 'keyfile',
+                            passphraseVariable: 'passphrase',
+                            usernameVariable: 'userName'
+                    )]) {
+                        remote.user = userName
+                        remote.idenityFile = keyfile
+                        remote.passphrase = passphrase
+                        sshPut remote: remote, from: './out.tar.gz', into: '.'
+                    }
                 }
             }
         }
