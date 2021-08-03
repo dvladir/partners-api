@@ -33,6 +33,7 @@ pipeline {
                     remote.host = DEPLOY_HOST
                     remote.port = DEPLOY_PORT as Integer
                     remote.allowAnyHosts = true
+                    remote.fileTransfer = 'SCP'
                     withCredentials([sshUserPrivateKey(
                             credentialsId: 'deploy',
                             keyFileVariable: 'keyfile',
@@ -40,11 +41,8 @@ pipeline {
                             usernameVariable: 'userName'
                     )]) {
                         remote.user = userName
-                        remote.idenity = keyfile
+                        remote.idenityFile = keyfile
                         remote.passphrase = passphrase
-                        for (def key in remote.keySet()) {
-                            println "key = ${key}, value = ${remote[key]}"
-                        }
                         sshPut remote: remote, from: './out.tar.gz', into: '.'
                     }
                 }
