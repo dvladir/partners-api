@@ -28,20 +28,22 @@ pipeline {
                 sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=out.tar --file Dockerfile.deploy .'
                 sh 'gzip out.tar'
                 script {
-                    def remote = [:]
-                    remote.name = DEPLOY_HOST
-                    remote.host = DEPLOY_HOST
-                    remote.port = DEPLOY_PORT as Integer
-                    remote.allowAnyHosts = true
-                    remote.fileTransfer = 'scp'
                     withCredentials([sshUserPrivateKey(
                             credentialsId: 'deploy',
                             keyFileVariable: 'keyfile',
+                            passphraseVariable: 'passphrase',
                             usernameVariable: 'userName'
                     )]) {
+                        def remote = [:]
+                        remote.name = DEPLOY_HOST
+                        remote.host = DEPLOY_HOST
+                        remote.port = DEPLOY_PORT as Integer
+                        remote.allowAnyHosts = true
+                        remote.fileTransfer = 'scp'
                         remote.user = userName
                         remote.idenityFile = keyfile
-                        sshPut remote: remote, from: './out.tar.gz', into: '.'
+                        remote.passphrase = passphrase
+                        sshPut remote: remote, from: './out.tar.gz', into: '~/out.tar.gz'
                     }
                 }
             }
