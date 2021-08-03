@@ -37,14 +37,10 @@ pipeline {
                     withCredentials([sshUserPrivateKey(
                             credentialsId: 'deploy',
                             keyFileVariable: 'keyfile',
-                            passphraseVariable: 'passphrase',
                             usernameVariable: 'userName'
                     )]) {
-                        echo "12345 ${keyfile}"
-                        echo "12345 ${passphrase}"
                         remote.user = userName
                         remote.idenityFile = keyfile
-                        remote.passphrase = passphrase
                         sshPut remote: remote, from: './out.tar.gz', into: '.'
                     }
                 }
