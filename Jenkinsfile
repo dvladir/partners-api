@@ -31,7 +31,7 @@ pipeline {
                     def remote = [:]
                     remote.name = DEPLOY_HOST
                     remote.host = DEPLOY_HOST
-                    remote.port = DEPLOY_PORT
+                    remote.port = DEPLOY_PORT as Integer
                     remote.allowAnyHosts = true
                     withCredentials([sshUserPrivateKey(
                             credentialsId: 'deploy',
