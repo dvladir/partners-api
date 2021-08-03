@@ -33,7 +33,7 @@ pipeline {
                     remote.host = DEPLOY_HOST
                     remote.port = DEPLOY_PORT as Integer
                     remote.allowAnyHosts = true
-                    remote.fileTransfer = 'SCP'
+                    remote.fileTransfer = 'scp'
                     withCredentials([sshUserPrivateKey(
                             credentialsId: 'deploy',
                             keyFileVariable: 'keyfile',
