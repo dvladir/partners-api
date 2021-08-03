@@ -40,7 +40,7 @@ pipeline {
                             usernameVariable: 'userName'
                     )]) {
                         remote.user = userName
-                        remote.idenityFile = keyfile
+                        remote.idenity = keyfile
                         remote.passphrase = passphrase
                         sshPut remote: remote, from: './out.tar.gz', into: '.'
                     }
