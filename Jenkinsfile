@@ -34,8 +34,8 @@ pipeline {
                         usernameVariable: 'userName'
                 )]) {
                     sh 'echo ${passphrase} >> pass'
-                    sh 'sshpass -Ppassphrase -f ./pass scp -o StrictHostKeyChecking=no -i ${keyfile} -P ${DEPLOY_PORT} ./partners-api.tar.gz ${userName}@${DEPLOY_HOST}:~/image-deploy/partners-api.tar.gz'
-                    sh 'sshpass -Ppassphrase -f ./pass ssh -o StrictHostKeyChecking=no -i ${keyfile} -p ${DEPLOY_PORT} ${userName}@${DEPLOY_HOST} docker import \\~/image-deploy/partners-api.tar.gz dvladir:partners-api'
+                    sh 'sshpass -Ppassphrase -f ./pass scp -o StrictHostKeyChecking=no -i ${keyfile} -P ${DEPLOY_PORT} ./partners-api.tar.gz ${userName}@${DEPLOY_HOST}:~/partners-deploy/'
+                    sh 'sshpass -Ppassphrase -f ./pass ssh -o StrictHostKeyChecking=no -i ${keyfile} -p ${DEPLOY_PORT} ${userName}@${DEPLOY_HOST} cd \\~/partners-deploy && docker import ./partners-api.tar.gz dvladir:partners-api && ./scripts/recreate.sh api'
                     sh 'rm ./pass'
                 }
             }
