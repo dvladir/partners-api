@@ -26,6 +26,17 @@ select * from add_partner(
    _person_middle_name := 'Ивановна'
     );
 
-select * from drop_partner('5003d3c3-1bbd-4be0-81ad-a7f86a5e3e91');
-
-select * from query_partner();
+select * from add_partner(
+        _partner_type := 'naturalPerson',
+        _address_city := 'Санкт-Петербург',
+        _address_street := 'Улица 3',
+        _address_house_number := '17',
+        _address_inx := '131332',
+        _contact_phone := '+75112223345',
+        _contact_email := 'test2@test.com',
+        _person_gender := 'male',
+        _person_date := to_date('01/03/1977', 'DD/MM/YYY'),
+        _person_first_name := 'Пётр',
+        _person_last_name := 'Шишков',
+        _person_middle_name := 'Васильевич'
+    );

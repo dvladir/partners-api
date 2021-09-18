@@ -1,5 +1,5 @@
 create or replace function add_partner(
-    _partner_type partnertype,
+    _partner_type partner_type,
     _address_city varchar(256) default '',
     _address_street varchar(256) default '',
     _address_house_number varchar(15) default '',
@@ -17,33 +17,25 @@ create or replace function add_partner(
 )
 returns uuid as $$
     declare
-        _personal_id integer default null;
-        _company_id integer default null;
-        _address_id integer;
-        _contact_id integer;
         _result uuid;
     begin
-        insert into contact (phone, email)
-        values (_contact_phone, _contact_email)
-        returning id into _contact_id;
+        insert into partner_info (partner_type)
+        values (_partner_type)
+        returning id into _result;
 
-        insert into address (city, street, house_number, inx)
-        values (_address_city, _address_street, _address_house_number, _address_inx)
-        returning id into _address_id;
+        insert into contact (partner_id, phone, email)
+        values (_result, _contact_phone, _contact_email);
+
+        insert into address (partner_id, city, street, house_number, inx)
+        values (_result, _address_city, _address_street, _address_house_number, _address_inx);
 
         if (_partner_type = 'naturalPerson') then
-            insert into personal_info (first_name, last_name, middle_name, birth_date, gender)
-            values (_person_first_name, _person_last_name, _person_middle_name, _person_date, _person_gender)
-            returning id into _personal_id;
+            insert into personal_info (partner_id, first_name, last_name, middle_name, birth_date, gender)
+            values (_result, _person_first_name, _person_last_name, _person_middle_name, _person_date, _person_gender);
         else
-            insert into company_info (name, foundation_year, num_employees)
-            values (_company_name, _company_foundation_year, _company_num_empl)
-            returning id into _company_id;
+            insert into company_info (partner_id, name, foundation_year, num_employees)
+            values (_result, _company_name, _company_foundation_year, _company_num_empl);
         end if;
-
-        insert into partner_info (partner_type, personal_id, company_id, address_id, contact_id)
-        values (_partner_type, _personal_id, _company_id, _address_id, _contact_id)
-        returning id into _result;
 
         return _result;
     end;

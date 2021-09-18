@@ -2,6 +2,11 @@ import { PartnerInfo } from '@domain/partner-info';
 import { nanoid } from 'nanoid';
 import { PartnerType } from '@domain/partner-type.enum';
 import { Gender } from '@domain/gender.enum';
+import { parse } from 'date-fns';
+
+const FORMAT = 'dd/MM/yyyy';
+const REF_DATE = new Date();
+REF_DATE.setHours(0, 0, 0, 0);
 
 export const PARTNER_STORE: PartnerInfo[] = [
   {
@@ -18,7 +23,7 @@ export const PARTNER_STORE: PartnerInfo[] = [
       firstName: 'Петр',
       lastName: 'Петров',
       middleName: 'Петрович',
-      birthDate: '10/10/1978',
+      birthDate: parse('10/10/1978', FORMAT, REF_DATE),
       gender: Gender.male,
     },
   },
@@ -48,7 +53,7 @@ export const PARTNER_STORE: PartnerInfo[] = [
       firstName: 'Анна',
       lastName: 'Иванова',
       middleName: 'Ивановна',
-      birthDate: '03/07/1984',
+      birthDate: parse('03/07/1984', FORMAT, REF_DATE),
       gender: Gender.female,
     },
   },
@@ -66,7 +71,7 @@ export const PARTNER_STORE: PartnerInfo[] = [
       firstName: 'Федор',
       lastName: 'Федоров',
       middleName: 'Федорович',
-      birthDate: '08/02/1981',
+      birthDate: parse('08/02/1981', FORMAT, REF_DATE),
       gender: Gender.male,
     },
   },
@@ -96,7 +101,7 @@ export const PARTNER_STORE: PartnerInfo[] = [
       firstName: 'Семен',
       lastName: 'Горбунков',
       middleName: 'Семенович',
-      birthDate: '10/10/1945',
+      birthDate: parse('10/10/1945', FORMAT, REF_DATE),
       gender: Gender.male,
     },
   },
@@ -114,7 +119,7 @@ export const PARTNER_STORE: PartnerInfo[] = [
       firstName: 'Виктор',
       lastName: 'Страшнов',
       middleName: 'Павлович',
-      birthDate: '10/10/1968',
+      birthDate: parse('10/10/1968', FORMAT, REF_DATE),
       gender: Gender.male,
     },
   },
@@ -180,7 +185,7 @@ export const PARTNER_STORE: PartnerInfo[] = [
       firstName: 'Василий',
       lastName: 'Васильев',
       middleName: 'Васильевич',
-      birthDate: '11/12/1963',
+      birthDate: parse('11/12/1963', FORMAT, REF_DATE),
       gender: Gender.male,
     },
   },
