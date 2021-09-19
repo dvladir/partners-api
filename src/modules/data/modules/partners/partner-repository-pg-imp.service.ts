@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PartnerRepositoryService } from './partner-repository.service';
-import { PgDbService } from '../../../pg-db/pg-db.service';
 import {
   PartnerPredicate,
   PartnerPredicateById,
@@ -12,10 +11,12 @@ import { PersistenceError } from '../common/persistence-error';
 import { ErrorMessageCode } from '@common/error-message-code.enum';
 import { PartnerType } from '@domain/partner-type.enum';
 import { Gender } from '@domain/gender.enum';
+import { POOL } from '@db/constants';
+import { Pool } from 'pg';
 
 @Injectable()
 export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
-  constructor(private _pgDb: PgDbService) {}
+  constructor(@Inject(POOL) private _pool: Pool) {}
 
   private readPartner(row: any): PartnerInfo {
     if (!row) {
@@ -59,7 +60,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
   }
 
   async add(v: Omit<PartnerInfo, 'id'>): Promise<{ id: string }> {
-    const client = await this._pgDb.pool.connect();
+    const client = await this._pool.connect();
     let id: string = undefined;
 
     try {
@@ -135,7 +136,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
   }
 
   async update(v: Partial<PartnerInfo>): Promise<unknown> {
-    const client = await this._pgDb.pool.connect();
+    const client = await this._pool.connect();
     let isExists = false;
 
     try {
@@ -238,7 +239,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
 
     const id = (predicate as PartnerPredicateById).id;
 
-    const client = await this._pgDb.pool.connect();
+    const client = await this._pool.connect();
 
     try {
       const partnersRow = await client.query({
@@ -263,7 +264,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
 
   async remove(v: Pick<PartnerInfo, 'id'>): Promise<unknown> {
     let isDeleted = false;
-    const client = await this._pgDb.pool.connect();
+    const client = await this._pool.connect();
     try {
       await client.query('begin');
       const res = await client.query({
@@ -302,7 +303,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
       pagesCount: 0,
     };
 
-    const client = await this._pgDb.pool.connect();
+    const client = await this._pool.connect();
 
     try {
       await client.query('begin');

@@ -2,6 +2,7 @@ FROM "rastasheep/alpine-node-chromium:14-alpine"
 WORKDIR /usr/src/app
 
 COPY package.json ./
+COPY .env.production ./
 COPY dist ./dist
 
 RUN yarn --production
