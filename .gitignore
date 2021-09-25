@@ -36,3 +36,5 @@ lerna-debug.log*
 yarn.lock
 out.tar
 out.tar.gz
+
+local-db

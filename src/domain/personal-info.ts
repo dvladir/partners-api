@@ -4,6 +4,6 @@ export interface PersonalInfo {
   firstName: string;
   lastName: string;
   middleName: string;
-  birthDate: string;
+  birthDate?: Date;
   gender: Gender;
 }

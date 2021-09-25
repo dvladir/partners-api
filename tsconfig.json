@@ -13,7 +13,8 @@
     "incremental": true,
     "paths": {
       "@domain/*": ["src/domain/*"],
-      "@common/*": ["src/common/*"]
+      "@common/*": ["src/common/*"],
+      "@db/*": ["src/modules/pg-db/*"]
     }
   }
 }

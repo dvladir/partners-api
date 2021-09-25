@@ -96,7 +96,7 @@ export class PartnerImpService implements PartnerService {
           .addErrors(ValidationErrorCode.FIELD_REQUIRED);
       }
 
-      if (isStringEmpty(partner?.personalInfo?.birthDate)) {
+      if (!partner?.personalInfo?.birthDate) {
         errorCollector
           .child('personalInfo')
           .child('birthDate')
