@@ -208,7 +208,8 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
             text: `update company_info ci
                    set name = coalesce($2, ci.name),
                        foundation_year = coalesce($3, ci.foundation_year),
-                       num_employees = coalesce($4, ci.num_employees)`,
+                       num_employees = coalesce($4, ci.num_employees)
+                   where pi.partner_id = $1`,
             values: [
               v.id,
               v.companyInfo?.name || null,
