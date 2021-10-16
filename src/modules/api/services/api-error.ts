@@ -8,6 +8,7 @@ const DEFAULT_MESSAGE_STATUS_MAP: MessageStatusMap = {
   [ErrorMessageCode.PARTNER_NOT_FOUND]: HttpStatus.NOT_FOUND,
   [ErrorMessageCode.INVALID_PARTNER_TYPE]: HttpStatus.BAD_REQUEST,
   [ErrorMessageCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
+  [ErrorMessageCode.INVALID_PARAMETER]: HttpStatus.BAD_REQUEST,
 };
 
 export class ApiError<P extends Record<string, unknown>> extends BaseError<P> {

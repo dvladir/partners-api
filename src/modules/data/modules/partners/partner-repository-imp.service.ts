@@ -13,6 +13,8 @@ import { ErrorMessageCode } from '@common/error-message-code.enum';
 import { nanoid } from 'nanoid';
 import { PARTNER_STORE } from './partner-store';
 import { getPage } from '../common/get-page';
+import {SortField} from '@domain/sort-field';
+import {PartnerSortableFields} from '@domain/partner-sortable-fields.enum';
 
 const createPredicate = (p: PartnerPredicate) => (x: PartnerInfo) => {
   if (p instanceof PartnerPredicateById) {
@@ -95,7 +97,7 @@ export class PartnerRepositoryImpService implements PartnerRepositoryService {
     pageNum: number;
     pageSize: number;
     predicate?: PartnerPredicate;
-    sort?: string;
+    sort?: SortField<PartnerSortableFields>;
   }): Promise<PageData<PartnerInfo>> {
     let items: PartnerInfo[] = [];
     if (params.predicate) {

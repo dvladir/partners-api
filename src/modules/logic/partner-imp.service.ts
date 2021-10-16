@@ -14,6 +14,8 @@ import { ErrorInfo } from '@domain/error-info';
 import { ValidationErrorCode } from './common/validation-error-code.enum';
 import { ValidationErrorCollector } from './common/validation-error-collector';
 import { PartnerType } from '@domain/partner-type.enum';
+import { SortField } from '@domain/sort-field';
+import { PartnerSortableFields } from '@domain/partner-sortable-fields.enum';
 
 @Injectable()
 export class PartnerImpService implements PartnerService {
@@ -156,6 +158,7 @@ export class PartnerImpService implements PartnerService {
     search: string,
     pageNum: number,
     pageSize: number,
+    sort?: SortField<PartnerSortableFields>,
   ): Promise<PageData<PartnerInfo>> {
     try {
       const predicate = new PartnerPredicateBySearchString(search);
@@ -163,6 +166,7 @@ export class PartnerImpService implements PartnerService {
         predicate,
         pageNum,
         pageSize,
+        sort,
       });
     } catch (e) {
       this._errorHandler.handleError(e);

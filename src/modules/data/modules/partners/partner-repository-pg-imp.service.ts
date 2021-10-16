@@ -13,6 +13,8 @@ import { PartnerType } from '@domain/partner-type.enum';
 import { Gender } from '@domain/gender.enum';
 import { POOL } from '@db/constants';
 import { Pool } from 'pg';
+import { SortField } from '@domain/sort-field';
+import { PartnerSortableFields } from '@domain/partner-sortable-fields.enum';
 
 @Injectable()
 export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
@@ -209,7 +211,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
                    set name = coalesce($2, ci.name),
                        foundation_year = coalesce($3, ci.foundation_year),
                        num_employees = coalesce($4, ci.num_employees)
-                   where pi.partner_id = $1`,
+                   where ci.partner_id = $1`,
             values: [
               v.id,
               v.companyInfo?.name || null,
@@ -294,7 +296,7 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
     pageNum: number;
     pageSize: number;
     predicate?: PartnerPredicate;
-    sort?: string;
+    sort?: SortField<PartnerSortableFields>;
   }): Promise<PageData<PartnerInfo>> {
     const result: PageData<PartnerInfo> = {
       pageNum: params.pageNum,
@@ -313,23 +315,64 @@ export class PartnerRepositoryPgImpService implements PartnerRepositoryService {
         ?.searchString;
       searchString = !!searchString ? `%${searchString.toLowerCase()}%` : '';
 
+      const field = params?.sort?.field || '';
+      const sortType = params?.sort?.sortType || '';
+
       await client.query({
         name: 'preparePartners',
         text: `
           create temp table t_partners as
-          select p.* from v_partners p
-          where $1 = '' or 
-            lower(concat(
-                p.address_city,
+          with pp as (
+            select 
+              p.*, 
+              lower(concat(
+                  p.address_city,
+                  p.address_street,
+                  p.address_house_number,
+                  p.contact_email,
+                  p.personal_first_name,
+                  p.personal_last_name,
+                  p.personal_middle_name,
+                  p.company_name
+              )) as search,
+              concat_ws(
+                ' ',
                 p.address_street,
                 p.address_house_number,
-                p.contact_email,
-                p.personal_first_name,
-                p.personal_last_name,
-                p.personal_middle_name,
-                p.company_name
-            )) like $1;`,
-        values: [searchString],
+                p.address_inx
+              ) as address_full,
+              case when p.partner_type = 'naturalPerson'
+                then concat_ws(
+                  ' ',
+                  p.personal_last_name,
+                  p.personal_first_name,
+                  p.personal_middle_name 
+                ) 
+                else p.company_name
+              end as full_name            
+            from v_partners p
+          )
+          select pp.* from pp
+          where $1 = '' or pp.search like $1
+          order by
+            case when $3 = 'desc' then (
+                case when $2 = 'phone' then pp.contact_phone end,
+                case when $2 = 'email' then pp.contact_email end,
+                case when $2 = 'partner_type' then pp.partner_type end,
+                case when $2 = 'city' then pp.address_city end,
+                case when $2 = 'address' then pp.address_full end,
+                case when $2 = 'name' then pp.full_name end
+            ) end desc,
+            case when ($3 = 'asc' OR $3 = '') then (
+                case when $2 = 'phone' then pp.contact_phone end,
+                case when $2 = 'email' then pp.contact_email end,
+                case when $2 = 'partner_type' then pp.partner_type end,
+                case when $2 = 'city' then pp.address_city end,
+                case when $2 = 'address' then pp.address_full end,
+                case when $2 = 'name' then pp.full_name end
+            )  
+          end;`,
+        values: [searchString, field, sortType],
       });
 
       const totalRows = await client.query(

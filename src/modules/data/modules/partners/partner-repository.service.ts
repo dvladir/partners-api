@@ -2,10 +2,11 @@ import { Repository } from '../common/repository';
 import { PartnerPredicate } from './partner-predicate';
 import { PartnerInfo } from '@domain/partner-info';
 import { PageData } from '@domain/page-data';
+import { SortField } from '@domain/sort-field';
+import { PartnerSortableFields } from '@domain/partner-sortable-fields.enum';
 
 export abstract class PartnerRepositoryService
-  implements Repository<PartnerInfo, PartnerPredicate>
-{
+  implements Repository<PartnerInfo, PartnerPredicate, PartnerSortableFields> {
   abstract add(v: Omit<PartnerInfo, 'id'>): Promise<{ id: string }>;
 
   abstract find(predicate: PartnerPredicate): Promise<PartnerInfo>;
@@ -14,7 +15,7 @@ export abstract class PartnerRepositoryService
     pageNum: number;
     pageSize: number;
     predicate?: PartnerPredicate;
-    sort?: string;
+    sort?: SortField<PartnerSortableFields>;
   }): Promise<PageData<PartnerInfo>>;
 
   abstract remove(v: Pick<PartnerInfo, 'id'>): Promise<unknown>;

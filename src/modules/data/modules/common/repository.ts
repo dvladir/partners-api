@@ -1,6 +1,7 @@
 import { PageData } from '@domain/page-data';
+import { SortField } from '@domain/sort-field';
 
-export interface Repository<T, P> {
+export interface Repository<T, P, FE> {
   add(v: T): Promise<{ id: string }>;
 
   update(v: T): Promise<unknown>;
@@ -13,6 +14,6 @@ export interface Repository<T, P> {
     pageNum: number;
     pageSize: number;
     predicate?: P;
-    sort?: string;
+    sort?: SortField<FE>;
   }): Promise<PageData<T>>;
 }

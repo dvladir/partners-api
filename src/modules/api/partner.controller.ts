@@ -4,7 +4,7 @@ import {
   Delete,
   Get,
   HttpStatus,
-  Param, ParseIntPipe,
+  Param,
   Post,
   Put,
   Query,
@@ -16,7 +16,9 @@ import { PartnerHeaderDto } from './dto/partners/partner-header-dto';
 import { PartnerDto } from './dto/partners/partner-dto';
 import {
   ApiExtraModels,
-  ApiOkResponse, ApiQuery, ApiTags,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import { IdentifyDto } from './dto/common/identify-dto';
 import { ErrorMessageCode } from '@common/error-message-code.enum';
@@ -25,7 +27,9 @@ import { ApiErrorResponse } from './decorators/api-error-response';
 import { ApiInternalErrorResponse } from './decorators/api-internal-error-response';
 import { ApiValidationErrorResponse } from './decorators/api-validation-error-response';
 import { ErrorInfoDto } from './dto/common/error-info-dto';
-import {ParseIntOptPipe} from './pipes/parse-int-opt.pipe';
+import { ParseIntOptPipe } from './pipes/parse-int-opt.pipe';
+import { SortDto } from './dto/common/sort-dto';
+import { PartnerSortableFields } from '@domain/partner-sortable-fields.enum';
 
 @Controller('partner')
 @ApiTags('partner')
@@ -40,18 +44,25 @@ export class PartnerController {
   @ApiQuery({ name: 'query', type: 'string', required: false })
   @ApiQuery({ name: 'pageNum', type: 'number', required: false })
   @ApiQuery({ name: 'pageSize', type: 'number', required: false })
+  @ApiQuery({ name: 'sort', type: 'string', required: false })
   @ApiPaginatedResponse(PartnerHeaderDto)
   @ApiInternalErrorResponse()
   async search(
     @Query('query') queryString?: string,
     @Query('pageNum', new ParseIntOptPipe(0)) pageNum?: number,
     @Query('pageSize', new ParseIntOptPipe(10)) pageSize?: number,
+    @Query('sort') sort?: string,
   ): Promise<PageDataDto<PartnerHeaderDto>> {
     try {
+      const sortData = SortDto.fromDto<PartnerSortableFields>(
+        new SortDto(sort),
+      );
+
       const data = await this._partnerService.searchPartners(
         queryString,
         pageNum,
         pageSize,
+        sortData,
       );
       return PageDataDto.toDto(data, PartnerHeaderDto.toDto);
     } catch (e) {
